@@ -1,0 +1,600 @@
+{
+  "name": "NewsForge",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Newsletter Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Post Topic",
+              "placeholder": "AI in Finance",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Target Audience"
+            },
+            {
+              "fieldLabel": "Tone of Voice",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Authoritative"
+                  },
+                  {
+                    "option": "Humerous"
+                  },
+                  {
+                    "option": "Direct"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        -68
+      ],
+      "id": "8214192a-c40c-45ba-83b7-6c6cc16ea7c0",
+      "name": "On form submission",
+      "webhookId": "4c186d20-3dc8-4c6d-b601-e6005edbd22a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b390a27-4b60-4bfe-9010-990ce3609baa",
+              "name": "Topic",
+              "value": "={{ $json['Post Topic'] }}",
+              "type": "string"
+            },
+            {
+              "id": "50300a74-b989-4fd9-9963-b852e4634409",
+              "name": "Target Audience",
+              "value": "={{ $json['Target Audience'] }}",
+              "type": "string"
+            },
+            {
+              "id": "994340fe-ade4-4388-8ee6-03a351cc11a1",
+              "name": "Tone of Voice",
+              "value": "={{ $json['Tone of Voice'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -68
+      ],
+      "id": "af7ed25b-33a6-4eab-9900-e75e2761ed29",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Newsletter Topic :{{ $json.Topic }}\nNewsletter Tone:{{ $json['Tone of Voice'] }}\nNewsletter Target Audience: {{ $json['Target Audience'] }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are an AI agent responsible for planning the sections of a newsletter by creating an engaging table of contents tailored to the newsletter's topic, tone, and target audience.\n\n# Context\n- The newsletter will vary in topic, tone, and target audience depending on the request.\n- Your role is to use the \"gemini_research\" tool to discover relevant, up-to-date, and high-quality information and craft a high-level, engaging table of contents.\n- The table of contents should resonate with the target audience and encourage them to read the full newsletter.\n\n# Instructions\n1. Analyze the incoming information, including the newsletter topic, tone, and target audience details.\n2. Use the \"gemini_research\" tool to identify relevant, trending, and high-impact subtopics related to the main newsletter topic.\n3. Based on your findings, create a table of contents with high-level, engaging topics tailored to the target audience.\n4. Ensure the topics align with the newsletter's tone and are structured to maintain the reader's interest.\n5. Prioritize clarity, novelty, and audience relevance over generic coverage.\n6. Include brief descriptions for each section if requested.\n\n# Tools\n- gemini_research for research, summarization, and trend discovery\n- Predefined audience profiles (if provided)\n\n# Examples\n\n## Input:\n- Topic: \"Sustainable Living\"\n- Tone: Informative yet approachable\n- Target Audience: Young adults interested in eco-friendly lifestyles\n\n## Output:\nTable of Contents:\n1. \"What is Sustainable Living? A Beginner’s Guide\"\n2. \"Top 10 Small Changes for a Big Impact\"\n3. \"The Science Behind Sustainability: Why It Matters\"\n4. \"Spotlight on Innovations: Green Tech of 2025\"\n5. \"Inspiration Corner: Stories of Everyday Eco-Warriors\"\n\n---\n\n## Input:\n- Topic: \"Remote Work Tips\"\n- Tone: Professional yet motivational\n- Target Audience: Corporate professionals transitioning to remote work\n\n## Output:\nTable of Contents:\n1. \"Remote Work Revolution: Adapting to the New Norm\"\n2. \"Home Office Hacks for Maximum Productivity\"\n3. \"Balancing Act: Work-Life Harmony Tips\"\n4. \"Top Collaboration Tools Every Remote Team Needs\"\n5. \"Success Stories: How Remote Work Changed Lives\"\n\n# Final Notes\n- Keep the topics concise and engaging to maximize interest.\n- Adapt your tone and choice of topics to suit the specific audience profile.\n- Always aim for a balance of informative and engaging content to maintain readership.\n- Avoid generic or overused section ideas; prioritize fresh angles and actionable insights.\n\nHere is the current date: {{ $now }}\n\n\nIN STRUCTRED OUTPUT----You are a structured data generator.\n\nYour task is to convert a newsletter table of contents into a strict JSON format.\n\n# Instructions\n- Extract each section from the provided table of contents.\n- For each section, generate:\n  - \"title\": a concise, engaging heading\n  - \"description\": a short 1–2 sentence explanation of what the section covers\n- Maintain alignment with the given target audience and tone.\n- Keep descriptions clear, specific, and non-generic.\n\n# Output Rules (VERY IMPORTANT)\n- Output ONLY valid JSON.\n- Do NOT include any extra text, explanations, or markdown.\n- Use the exact schema below.\n- Limit to a maximum of 4 sections.\n\n# JSON Schema\n{\n  \"newsletterSections\": [\n    {\n      \"title\": \"string\",\n      \"description\": \"string\"\n    }\n  ]\n}\n\n# Context\nTarget Audience:{{ $json['Target Audience'] }}\nTone: {{ $json['Tone of Voice'] }}\n# Input\nTable of Contents:\n{{ $json.output }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        -68
+      ],
+      "id": "ec8c3e0a-235f-43b2-8699-cc119de401bd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "resume-492307",
+          "mode": "list",
+          "cachedResultName": "RESUME"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        456,
+        156
+      ],
+      "id": "f99ce601-b553-4200-83dd-607b427a472d",
+      "name": "Google Vertex Chat Model",
+      "credentials": {
+        "googleApi": {
+          "id": "0M7CltcKl6y",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Prompt', ``, 'string') }}"
+            }
+          ]
+        },
+        "simplify": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Simplify_Output', ``, 'boolean') }}",
+        "jsonOutput": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Output_Content_as_JSON', ``, 'boolean') }}",
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGeminiTool",
+      "typeVersion": 1.1,
+      "position": [
+        584,
+        156
+      ],
+      "id": "bad5b800-d053-45f5-9f95-3b95b0459a82",
+      "name": "Message a model in Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "TQykqpJavdSR7",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"newsletterSections\": [\n    {\n      \"title\": \"Example Title\",\n      \"description\": \"Example description\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        936,
+        156
+      ],
+      "id": "41385dac-b820-4a73-bae7-7b7e62cb104c",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "resume-492307",
+          "mode": "list",
+          "cachedResultName": "RESUME"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        808,
+        156
+      ],
+      "id": "9896ca03-3029-4db9-a120-5a0a11a35eea",
+      "name": "Google Vertex Chat Model1",
+      "credentials": {
+        "googleApi": {
+          "id": "0M7CltcZz2y",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your job is to split out the table of contents into an individual item for each section.\n\nOutput each section separately in a field called \"newsletterSections\".\n\nWhen doing so, keep in mind that the newsletter target audience is {{ $('Edit Fields').item.json['Target Audience'] }}  and the tone of the newsletter should be {{ $('Edit Fields').item.json['Tone of Voice'] }}\n\nHere is the table of contents: {{ $json.output }}\n\n# Final notes\n- You should only output 4 sections maximum at once\n\nFormat your response EXACTLY as follows:\n\n1. <Title>\nDescription: <Description>\n\n2. <Title>\nDescription: <Description>\n\n(Continue for all sections)\n\nRules:\n- Do NOT output JSON\n- Do NOT add extra text\n- Do NOT skip numbering\n- Keep each title paired with its correct description",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        800,
+        -68
+      ],
+      "id": "11916bf4-5bec-419f-9c50-b5bde508a4d6",
+      "name": "GENERATE OUTLINE"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.newsletterSections",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -68
+      ],
+      "id": "efda1da0-7ef5-48c5-989d-cbd6e1395707",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Section Title: {{ $json.title }}\n\nSection Description :{{ $json.description }}\n\nNewsletter Target Audience :{{ $('Edit Fields').item.json['Target Audience'] }}",
+        "options": {
+          "systemMessage": "Overview\nYou are an AI agent responsible for delivering only the final content for a newsletter section. Your role is to produce concise, well-researched, and audience-tailored content based solely on the provided inputs, with no prefacing statements or explanations.\nContext\n\nAll necessary details, including the section title, description, target audience, and tone, will be provided.\nThe goal is to create engaging content that aligns with the audience's expectations and the newsletter's objectives.\nContent must be supported by research, with sources clearly cited using hyperlinks.\n\nInstructions\n\nWrite the final content without including any introductory or concluding remarks about the writing process.\nConduct research using the perplexity_research2 tool to ensure credibility and relevance.\nUse the provided inputs to craft a focused section tailored to the target audience.\nInclude citations seamlessly within the content using hyperlinks to the original sources.\n\nTools\n\nGoogle Vertex(for research and citations).\n\nCitation Guidelines\n\nUse the google vertex tool to gather information and cite sources\nFor each major claim or piece of information, include a hyperlinked inline citation\nFormat citations as HTML links with descriptive text:\n<a href=\"[URL]\">[Source: Publication Name]</a>\nWhen directly quoting from a source, use quotation marks and include the citation\n\nExamples\n\nInput:\n\nSection Title: \"The Psychology of Happy Patients\"\nDescription: Discuss strategies dental offices can use to improve patient experiences and satisfaction, such as personalized care and stress-reducing techniques.\nTarget Audience: Dentists and dental practice managers.\nTone: Informative yet approachable.\n\n\nOutput:\n\"Creating a positive patient experience starts with understanding the key drivers of satisfaction in dental care. Personalized care, such as addressing individual patient concerns and tailoring treatments, can significantly boost trust and comfort Source. Stress-reducing techniques, like offering noise-canceling headphones or aromatherapy in waiting rooms, have also been shown to alleviate anxiety and improve overall impressions of care Source. By focusing on these elements, dental practices can foster happier, more loyal patients.\"\n\nSOP (Standard Operating Procedure)\n\nInput Analysis: Understand the section's title, description, target audience, and tone.\nResearch: Use the perplexity_research2 tool to gather relevant, credible information.\nContent Writing: Craft a section based on the provided inputs, ensuring it is directly usable in the newsletter.\nCite Sources: Integrate hyperlinks to all references within the content.\nReview and Deliver: Proofread the content to ensure clarity, accuracy, and alignment with the target audience.\n\nFinal Notes\n\nThe output must start directly with the content, without introductory or transitional phrases.\nAll sources must be clearly cited and integrated naturally into the text.\nFocus on delivering value and ensuring readability for the target audience."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1376,
+        -192
+      ],
+      "id": "25f9cd63-765a-450d-a556-cd0380a3872c",
+      "name": "Research Agent",
+      "alwaysOutputData": false,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1728,
+        -68
+      ],
+      "id": "218704f3-6d39-4063-862c-394b1ec5bf5e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "resume-492307",
+          "mode": "list",
+          "cachedResultName": "RESUME"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        1448,
+        32
+      ],
+      "id": "2d013b7d-4ef1-492e-b4de-f29eecd20f09",
+      "name": "Google Vertex Chat Model2",
+      "credentials": {
+        "googleApi": {
+          "id": "0M7CltwzZz2y",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=List the title: {{ $json.title }}\n\nList the Article content:{{ $json.description }}",
+        "options": {
+          "systemMessage": "=##Overview\nYou are an expert editor specializing in creating and refining content to output a high quality, formatted article. You are given a list of titles and outputs and you will use these to create a newsletter tailored towards the defined target audience. Create a section in the article for each title, with a hyperlinked source in each section based on the content.\n##Objective\n\nCreate content for each title using the provided content\nEach section should contain inline citations Don't leave any out\nImprove the flow of the newsletter and format it for readability\n\n##Citation Management\n\nPreserve all inline citations\nStandardize citation format\nEnsure citations don't disrupt the flow of reading\n\n##Source Section\n\nCreate ONE \"Sources\" section at the end of the newsletter\nFormat each source entry consistently:\n<li><a href=\"[URL]\">[Publication Name] - [Article Title]</a></li>\nInclude complete URL for each source\nOrganize all sources alphabetically\nVerify all links are functional\n\n##Output Format\nThe newsletter should be structured as HTML that will be sent through email:\n\nDo not output a title or an introduction, the output should start with the first article heading\nInclude nice colored HTML formatting throughout the newsletter\nMain content with hyperlink citations in each section\nHeaders for each section of the article\nSources section at the end with all links\n\n##Important\nOutput 1000 words maximum or else the automation breaks!\nToday's date is {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1952,
+        -68
+      ],
+      "id": "ff5d0521-8ba9-4bd4-926b-f50c724f5f10",
+      "name": "Editor"
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "resume-492307",
+          "mode": "list",
+          "cachedResultName": "RESUME"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        2024,
+        156
+      ],
+      "id": "4db9357e-501c-4117-829c-bd15522c3add",
+      "name": "Google Vertex Chat Model3",
+      "credentials": {
+        "googleApi": {
+          "id": "0M7CltcwzZz2y",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a title for the incoming newsletter. The tone of the newsletter is {{ $('On form submission').item.json['Tone of Voice'] }}{ and the target audience is {{ $('On form submission').item.json['Target Audience'] }}\nHere is the newsletter:\n{{ $json.output }}\nOutput Format\nOutput the title in plain text, no quotation marks, and capitalize the first letter of each word.\nExample: Is Artificial Intelligence A Friend Or Foe?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2304,
+        -68
+      ],
+      "id": "6a80628f-f91e-4608-a9b8-2546d72ad400",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "resume-492307",
+          "mode": "list",
+          "cachedResultName": "RESUME"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        2376,
+        156
+      ],
+      "id": "80e21cdd-dfbb-4a3d-b14a-6b9d6da14131",
+      "name": "Google Vertex Chat Model4",
+      "credentials": {
+        "googleApi": {
+          "id": "0M7CltcwzZz2y",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "shouryagoyalmail.com",
+        "subject": "={{ $json.output }}",
+        "message": "={{ $('Editor').item.json.output }}",
+        "options": {
+          "appendAttribution": true,
+          "senderName": "Daily Newsletter"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2656,
+        -68
+      ],
+      "id": "fb9926ed-95b1-48fd-8873-8b275f525945",
+      "name": "Send a message",
+      "webhookId": "c5ea57e4-170d-43fa-b678-51dd8d6ff520",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rjNfv4VarObRQ8",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model in Google Gemini": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "GENERATE OUTLINE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "GENERATE OUTLINE",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "GENERATE OUTLINE",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GENERATE OUTLINE": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Research Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Research Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Editor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Editor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editor": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "38482d37-88a5-454b-9732-bc3a856ddec9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cbb9c00ba5db89df39f19e199f4a96679ecb173ad1b0be03dd1ffa310315c61a"
+  },
+  "id": "DE4pBHTn8tD2OA9Z",
+  "tags": [
+    {
+      "name": "Multi-Agent SEO Content",
+      "id": "DmhFqICwymLCLcNC",
+      "updatedAt": "2026-04-20T17:03:39.896Z",
+      "createdAt": "2026-04-20T17:03:39.896Z"
+    }
+  ]
+}
