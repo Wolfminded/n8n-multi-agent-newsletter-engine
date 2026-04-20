@@ -41,7 +41,8 @@ Zero manual writing. Professional quality. Scales effortlessly.
 5. Final AI Agent creates subject line
 6. Delivered to inbox
 
-![Full Workflow](screenshots/workflow-canvas.png)
+[Full Workflow]<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/0a5bb107-c81f-41ef-a7cf-99dabc96e8e9" />
+
 
 ## 🚀 Quick Start
 
